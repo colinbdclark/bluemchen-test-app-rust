@@ -1,0 +1,37 @@
+name: build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: thumbv7em-none-eabihf
+          components: llvm-tools-preview
+
+      - name: Install cargo-binutils
+        uses: actions-rs/install@v0.1
+        with:
+          crate: cargo-binutils
+          version: latest
+          use-tool-cache: true
+
+      - name: Build firmware binary
+        uses: actions-rs/cargo@v1
+        with:
+          command: objcopy
+          args: --release -- -O binary firmware/bluemchen_test_app_rust.bin
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: firmware/bluemchen_test_app_rust.bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
