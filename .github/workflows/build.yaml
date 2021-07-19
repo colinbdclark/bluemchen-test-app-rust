@@ -26,12 +26,12 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: objcopy
-          args: --release -- -O binary firmware/bluemchen_test_app_rust.bin
+          args: --release -- -O binary bluemchen_test_app_rust.bin
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: firmware/bluemchen_test_app_rust.bin
+          files: bluemchen_test_app_rust.bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
